@@ -20,7 +20,7 @@
       "applicationUrl": "https://localhost:7046;http://localhost:5085",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Testing",
-        "OPENAI_API_KEY": "AIzaSyDFWJk-lT2kqHMJe6l-ez3SdfBPd9AuCkc"
+        "AI_MODEL": "gemini-2.5-flash"
       }
     },
     "stage": {
@@ -31,7 +31,7 @@
       "applicationUrl": "https://localhost:7046;http://localhost:5085",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Staging",
-        "OPENAI_API_KEY": "AIzaSyDFWJk-lT2kqHMJe6l-ez3SdfBPd9AuCkc"
+        "AI_MODEL": "gemini-2.5-flash"
       }
     }
   }

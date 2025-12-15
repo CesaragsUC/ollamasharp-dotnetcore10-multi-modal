@@ -1,4 +1,7 @@
 using Demo._02.Web.Services;
+using GeminiDotnet;
+using GeminiDotnet.Extensions.AI;
+using Google.GenAI;
 using Microsoft.Extensions.AI;
 using Microsoft.OpenApi;
 using OllamaSharp;
@@ -21,13 +24,45 @@ builder.Services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title =
 var uri = new Uri("http://localhost:11434");
 
 var envType = builder.Environment.IsDevelopment();
+var envTypeName = builder.Environment.EnvironmentName.ToLower();
+
+#region Gemini Setup
+// Doc usar gemini client diretamente: https://ai.google.dev/gemini-api/docs/quickstart?hl=pt-br#c_1
+// Doc implemetacao alternativa com GeminiChatClient: https://github.com/rabuckley/GeminiDotnet
+
+var aiModel = Environment.GetEnvironmentVariable("AI_MODEL");
+var geminiApiKey = builder.Configuration["GOOGLE_API_KEY"]; // esse valor vem das variaveis de ambiente do sistema
+
+var geminiClient = new GeminiChatClient(new GeminiClientOptions
+{
+    ApiKey = geminiApiKey!,
+    ModelId = "gemini-2.5-flash"
+});
+
+// The client gets the API key from the environment variable `GEMINI_API_KEY`.
+var client = new Client();
+builder.Services.AddSingleton(client);
+builder.Services.AddSingleton(geminiClient);
+
+
+#endregion
+
+// Just to show alternative way to create the ChatClient for OpenAI ChatGPT.
+var chatGptApiKey = builder.Configuration["OPENAI_API_KEY"];
+var chatGptClient = new OpenAI.Chat.ChatClient(
+                             model:"gpt-4o-mini",
+                             apiKey:chatGptApiKey)
+                            .AsIChatClient();
+
 
 builder.Services.AddChatClient(services => 
          builder.Environment.IsDevelopment()
          ? new OllamaApiClient(uri, "phi3:3.8b")
-         : new OpenAI.Chat.ChatClient("gpt-4o-mini", Environment.GetEnvironmentVariable("OPENAI_API_KEY")).AsIChatClient())
+         : chatGptClient)
             .UseDistributedCache()
             .UseLogging();
+
+
 
 
 if (builder.Environment.IsDevelopment())

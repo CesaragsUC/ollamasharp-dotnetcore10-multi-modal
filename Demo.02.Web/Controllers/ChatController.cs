@@ -1,13 +1,20 @@
 ﻿using Demo._02.Web.Models;
 using Demo._02.Web.Services;
+using GeminiDotnet.Extensions.AI;
+using Google.GenAI;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.AI;
 using System.Text;
+using static Google.Apis.Requests.BatchRequest;
 
 namespace Demo._02.Web.Controllers;
 
 [Route("api/[controller]")]
-public class ChatController(IChatClient chatClient, ChatService chatService) : Controller
+public class ChatController(
+    IChatClient chatClient,
+    ChatService chatService,
+    Client geminiClient,
+    GeminiChatClient geminiChatClient) : Controller
 {
     /// <summary>
     /// Versao simples da resposta
@@ -19,8 +26,16 @@ public class ChatController(IChatClient chatClient, ChatService chatService) : C
     [Route("question/{prompt}")]
     public async Task<IActionResult> Question(string prompt)
     {
-        var response = await chatClient.GetResponseAsync(prompt);
+        /// OPCAO :1 Usando o chatClient generico (Ollama ou Gemini dependendo do ambiente)
+        //var response = await chatClient.GetResponseAsync(prompt);
 
+        /// OPCAO 2: Usando o Gemini diretamente -> Client().
+        // var response = await geminiClient.Models.GenerateContentAsync(model: "gemini-2.5-flash", prompt);
+
+        /// OPCAO 3: Usando o Gemini via GeminiChatClient
+        var response = await geminiChatClient.GetResponseAsync(prompt);
+
+        //  return Ok(response.Candidates[0].Content.Parts[0].Text);
         return Ok(response.Text);
     }
 
@@ -83,7 +98,7 @@ public class ChatController(IChatClient chatClient, ChatService chatService) : C
     [Route("questionv4")]
     public async Task<IActionResult> QuestionV4([FromBody] QuestionInput questionInput)
     {
-        var response = await chatService.ChatUserAsync(questionInput.ChatId.ToString(),questionInput.Prompt);
+        var response = await chatService.ChatUserAsync(questionInput.ChatId.ToString(), questionInput.Prompt);
         return Ok(response);
     }
 
