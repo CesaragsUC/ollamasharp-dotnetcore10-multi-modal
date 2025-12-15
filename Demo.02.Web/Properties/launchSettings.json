@@ -9,7 +9,7 @@
       "applicationUrl": "http://localhost:5085",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "OPENAI_API_KEY": "<Your-OpenAI-Key-Here>"
+        "OPENAI_API_KEY": "YOUR-KEY"
       }
     },
     "test": {
