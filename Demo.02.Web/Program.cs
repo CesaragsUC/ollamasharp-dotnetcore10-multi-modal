@@ -41,9 +41,8 @@ var geminiClient = new GeminiChatClient(new GeminiClientOptions
 
 // The client gets the API key from the environment variable `GEMINI_API_KEY`.
 var client = new Client();
-builder.Services.AddSingleton(client);
-builder.Services.AddSingleton(geminiClient);
-
+builder.Services.AddSingleton(client); // registra gemini Google.GenAI
+builder.Services.AddSingleton(geminiClient); // registra GeminiChatClient GeminiDotnet
 
 #endregion
 
@@ -58,7 +57,7 @@ var chatGptClient = new OpenAI.Chat.ChatClient(
 builder.Services.AddChatClient(services => 
          builder.Environment.IsDevelopment()
          ? new OllamaApiClient(uri, "phi3:3.8b")
-         : chatGptClient)
+         : geminiClient)
             .UseDistributedCache()
             .UseLogging();
 
